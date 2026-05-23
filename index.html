@@ -960,7 +960,7 @@ function chkOT(){
   var emp=emps.find(function(e){return e.id===eid;}),el=document.getElementById('m-ots');
   if(!login||!emp){el.value='';el.style.color='';return;}
   var on=isOT(login,emp.shift);
-  el.value=on?'✅ On Time (Shift: '+f12(emp.shift)+')':'⚠️ Late (15 min grace from '+f12(emp.shift)+')';
+  el.value=on?'✅ On Time (Shift: '+f12(emp.shift)+')':'⚠️ Late (30 min grace from '+f12(emp.shift)+')';
   el.style.color=on?'var(--grn)':'var(--yel)';
 }
 function subM(){
@@ -1043,6 +1043,7 @@ function subE(){
   // ── Step 3: Tasks Completed ──
   var tdnCheck=document.getElementById('e-tdn').value;
   if(tdnCheck===''){toast('Please enter Tasks Completed (*)','e');return;}
+  if(!td){toast('Please describe your Tasks Completed  for today','e');return;}
 
   // ── Step 4: Hour breakdown ──
   var prodCheck=document.getElementById('e-prod').value;
