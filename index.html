@@ -149,11 +149,38 @@ canvas{width:100% !important;}
 .analytics-chart{height:250px;}
 .analytics-note{background:var(--sur);border:1px solid var(--bdr);border-radius:9px;padding:10px 12px;font-size:12px;line-height:1.5;margin-bottom:8px;}
 .analytics-note strong{color:var(--txt);}
-#analytics-report.pdf-exporting .analytics-grid{display:block;margin-bottom:0;}
-#analytics-report.pdf-exporting .analytics-grid .card{margin-bottom:14px;}
-#analytics-report.pdf-exporting .card,#analytics-report.pdf-exporting .analytics-chart,#analytics-report.pdf-exporting img{break-inside:avoid;page-break-inside:avoid;}
-#analytics-report.pdf-exporting .analytics-grid:first-of-type{break-before:page;page-break-before:always;}
-#analytics-report.pdf-exporting .analytics-chart{height:260px;}
+#analytics-report.pdf-exporting{width:100%;max-width:none;background:#fff;color:#0f172a;padding:0 0 0 100px;}
+#analytics-report.pdf-exporting *{box-shadow:none !important;}
+#analytics-report.pdf-exporting .card{background:#fff;border:1px solid #dbe3ef;border-radius:8px;padding:12px;color:#0f172a;}
+#analytics-report.pdf-exporting .card[style]{margin-bottom:8px !important;}
+#analytics-report.pdf-exporting h2,#analytics-report.pdf-exporting .analytics-title{color:#0f172a;}
+#analytics-report.pdf-exporting h2{font-size:12px;margin-bottom:6px;}
+#analytics-report.pdf-exporting .analytics-head{margin-bottom:8px;}
+#analytics-report.pdf-exporting .analytics-sub{color:#475569;font-size:9px;}
+#analytics-report.pdf-exporting .analytics-kpis{grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:8px;}
+#analytics-report.pdf-exporting .analytics-kpi{background:#f8fafc;border-color:#dbe3ef;border-radius:7px;padding:9px 6px;break-inside:avoid;page-break-inside:avoid;}
+#analytics-report.pdf-exporting .analytics-kpi .av{font-size:18px;color:#0369a1;}
+#analytics-report.pdf-exporting .analytics-kpi .al{font-size:7.5px;color:#475569;letter-spacing:.03em;}
+#analytics-report.pdf-exporting .analytics-note{background:#f8fafc;border-color:#dbe3ef;color:#0f172a;font-size:10px;line-height:1.35;padding:7px 8px;margin-bottom:5px;break-inside:avoid;page-break-inside:avoid;}
+#analytics-report.pdf-exporting .analytics-note strong{color:#0f172a;}
+#analytics-report.pdf-exporting .analytics-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:8px;}
+#analytics-report.pdf-exporting .analytics-grid .card{margin-bottom:0;break-inside:avoid;page-break-inside:avoid;}
+#analytics-report.pdf-exporting .analytics-chart{height:235px;break-inside:avoid;page-break-inside:avoid;}
+#analytics-report.pdf-exporting .analytics-pdf-chart{display:block;width:100%;height:100%;object-fit:contain;background:transparent;break-inside:avoid;page-break-inside:avoid;}
+#analytics-report.pdf-exporting .tw{overflow:visible;border-color:#dbe3ef;border-radius:8px;}
+#analytics-report.pdf-exporting table{width:100%;table-layout:fixed;border-collapse:collapse;font-size:8.5px;}
+#analytics-report.pdf-exporting th,#analytics-report.pdf-exporting td{padding:5px 4px;border-color:#e2e8f0;white-space:normal;word-break:break-word;line-height:1.25;color:#0f172a;}
+#analytics-report.pdf-exporting th{background:#f1f5f9;color:#334155;font-size:7.5px;letter-spacing:.02em;}
+#analytics-report.pdf-exporting tr{break-inside:avoid;page-break-inside:avoid;}
+#analytics-report.pdf-exporting th:nth-child(1),#analytics-report.pdf-exporting td:nth-child(1){width:17%;}
+#analytics-report.pdf-exporting th:nth-child(2),#analytics-report.pdf-exporting td:nth-child(2){width:12%;}
+#analytics-report.pdf-exporting th:nth-child(3),#analytics-report.pdf-exporting td:nth-child(3){width:7%;}
+#analytics-report.pdf-exporting th:nth-child(4),#analytics-report.pdf-exporting td:nth-child(4){width:9%;}
+#analytics-report.pdf-exporting th:nth-child(5),#analytics-report.pdf-exporting td:nth-child(5){width:14%;}
+#analytics-report.pdf-exporting th:nth-child(6),#analytics-report.pdf-exporting td:nth-child(6){width:9%;}
+#analytics-report.pdf-exporting th:nth-child(7),#analytics-report.pdf-exporting td:nth-child(7){width:8%;}
+#analytics-report.pdf-exporting th:nth-child(8),#analytics-report.pdf-exporting td:nth-child(8){width:8%;}
+#analytics-report.pdf-exporting th:nth-child(9),#analytics-report.pdf-exporting td:nth-child(9){width:15%;}
 @media(max-width:900px){.analytics-kpis{grid-template-columns:repeat(2,1fr);}.analytics-grid{grid-template-columns:1fr;}}
 @media(max-width:660px){.c4{grid-template-columns:repeat(2,1fr);}.c3,.c2{grid-template-columns:1fr;}nav{padding:10px 12px;}.view{padding:12px;}}
 
@@ -1286,6 +1313,57 @@ function dAN(id){if(ANC[id]){ANC[id].destroy();delete ANC[id];}}
 function avgArr(arr){return arr.length?arr.reduce(function(s,v){return s+(+v||0);},0)/arr.length:0;}
 function pctVal(done,total){return total>0?Math.round(done/total*100):0;}
 
+function cssVar(name,fallback){
+  var v=getComputedStyle(document.body).getPropertyValue(name).trim();
+  return v||fallback;
+}
+
+function chartPalette(mode){
+  var pdf=mode==='pdf';
+  var light=pdf||document.body.classList.contains('theme-morning');
+  return {
+    text:pdf?'#0f172a':cssVar('--txt',light?'#0f172a':'#e8eaf2'),
+    muted:pdf?'#334155':(light?'#334155':cssVar('--mut','#6b7a99')),
+    grid:pdf?'rgba(148,163,184,.35)':(light?'rgba(100,116,139,.24)':cssVar('--bdr','#1f2940'))
+  };
+}
+
+function applyChartPalette(chart,mode){
+  if(!chart||!chart.options) return;
+  var p=chartPalette(mode);
+  if(chart.options.plugins&&chart.options.plugins.legend&&chart.options.plugins.legend.labels){
+    var labels=chart.options.plugins.legend.labels;
+    labels.color=p.text;
+    labels.font={size:12,weight:'600'};
+    if(labels.padding==null) labels.padding=12;
+    labels.boxWidth=34;
+    labels.boxHeight=10;
+  }
+  if(chart.options.scales){
+    Object.keys(chart.options.scales).forEach(function(axis){
+      var scale=chart.options.scales[axis];
+      if(!scale) return;
+      if(scale.ticks){
+        scale.ticks.color=p.muted;
+        scale.ticks.font={size:11,weight:'500'};
+        if(axis==='x'){
+          scale.ticks.autoSkip=true;
+          scale.ticks.maxRotation=35;
+        }
+      }
+      if(scale.grid&&scale.grid.display!==false) scale.grid.color=p.grid;
+      if(scale.border) scale.border.color=p.grid;
+    });
+  }
+  chart.update('none');
+}
+
+function applyChartPalettes(collection,mode){
+  Object.keys(collection||{}).forEach(function(id){
+    applyChartPalette(collection[id],mode);
+  });
+}
+
 function getDashFilteredData(){
   var pr=getDashPeriodRange();
   var team=document.getElementById('a-team').value;
@@ -1379,6 +1457,7 @@ function renderAnalytics(){
   document.getElementById('an-table').innerHTML=rows.map(function(e){
     return '<tr><td><strong>'+e.name+'</strong></td><td>'+e.team+'</td><td>'+e.reports+'</td><td><strong>'+e.avgScore+'</strong></td><td>'+e.tasks+' ('+e.taskRate+'%)</td><td>'+e.onTime+'%</td><td>'+(e.avgHrs?e.avgHrs+'h':'-')+'</td><td>'+(e.blockers?'<span style="color:var(--red)">'+e.blockers+'</span>':'0')+'</td><td><span class="'+bCls(e.band)+'">'+e.band+'</span></td></tr>';
   }).join('')||'<tr><td colspan="9" style="text-align:center;color:var(--mut);padding:18px;">No analytics data for this filter.</td></tr>';
+  applyChartPalettes(ANC);
 }
 
 function prepareAnalyticsChartsForPDF(){
@@ -1404,7 +1483,7 @@ function normalizeChartForPDF(chart){
     if(chart.config.type==='pie'||chart.config.type==='doughnut') ds.borderWidth=0;
   });
   chart.resize();
-  chart.update('none');
+  applyChartPalette(chart,'pdf');
 }
 
 function swapAnalyticsCanvasesForPDF(root){
@@ -1420,6 +1499,7 @@ function swapAnalyticsCanvasesForPDF(root){
     }catch(e){
       return;
     }
+    img.className='analytics-pdf-chart';
     img.style.display='block';
     img.style.width='100%';
     img.style.height=(parent.offsetHeight||canvas.offsetHeight||240)+'px';
@@ -1452,6 +1532,13 @@ function setAnalyticsPDFMode(root,on){
   else root.classList.remove('pdf-exporting');
 }
 
+function cleanupAnalyticsPDF(el,restoreControls,restoreCharts){
+  if(restoreControls) restoreControls();
+  if(restoreCharts) restoreCharts();
+  setAnalyticsPDFMode(el,false);
+  renderAnalytics();
+}
+
 function downloadAnalyticsPDF(){
   renderAnalytics();
   var label=(document.getElementById('an-filter-label').textContent||'analytics').replace(/[^a-z0-9]+/gi,'_').replace(/^_+|_+$/g,'');
@@ -1464,29 +1551,33 @@ function downloadAnalyticsPDF(){
   toast('Preparing analytics PDF...','i');
   setTimeout(function(){
     var el=document.getElementById('analytics-report');
+    var restoreCharts=null,restoreControls=null;
     setAnalyticsPDFMode(el,true);
-    prepareAnalyticsChartsForPDF();
-    var restoreCharts=swapAnalyticsCanvasesForPDF(el);
-    var restoreControls=hideAnalyticsPDFControls(el);
-    html2pdf().set({
-      margin:.35,
-      filename:file,
-      image:{type:'jpeg',quality:.98},
-      html2canvas:{scale:2,backgroundColor:'#0a0d14',useCORS:true,allowTaint:true},
-      jsPDF:{unit:'in',format:'a4',orientation:'portrait'},
-      pagebreak:{mode:['css','legacy'],before:['#analytics-report.pdf-exporting .analytics-grid:first-of-type'],avoid:['#analytics-report.pdf-exporting .card','#analytics-report.pdf-exporting .analytics-chart','#analytics-report.pdf-exporting img']}
-    }).from(el).save().then(function(){
-      restoreControls();
-      restoreCharts();
-      setAnalyticsPDFMode(el,false);
-      toast('Analytics PDF downloaded.','s');
-    }).catch(function(){
-      restoreControls();
-      restoreCharts();
-      setAnalyticsPDFMode(el,false);
-      toast('PDF download failed. Please try again.','e');
-    });
-  },500);
+    setTimeout(function(){
+      try{
+        prepareAnalyticsChartsForPDF();
+        restoreCharts=swapAnalyticsCanvasesForPDF(el);
+        restoreControls=hideAnalyticsPDFControls(el);
+        html2pdf().set({
+          margin:[.14,.14,.18,.14],
+          filename:file,
+          image:{type:'png',quality:1},
+          html2canvas:{scale:2,backgroundColor:'#ffffff',useCORS:true,allowTaint:true,scrollY:0,windowWidth:Math.max(el.scrollWidth,el.offsetWidth)},
+          jsPDF:{unit:'in',format:'a4',orientation:'portrait'},
+          pagebreak:{mode:['css','legacy'],avoid:['#analytics-report.pdf-exporting .analytics-grid .card','#analytics-report.pdf-exporting .analytics-note','#analytics-report.pdf-exporting tr']}
+        }).from(el).save().then(function(){
+          cleanupAnalyticsPDF(el,restoreControls,restoreCharts);
+          toast('Analytics PDF downloaded.','s');
+        }).catch(function(){
+          cleanupAnalyticsPDF(el,restoreControls,restoreCharts);
+          toast('PDF download failed. Please try again.','e');
+        });
+      }catch(e){
+        cleanupAnalyticsPDF(el,restoreControls,restoreCharts);
+        toast('PDF download failed. Please try again.','e');
+      }
+    },80);
+  },300);
 }
 
 // ══════════════════════════════════════════════════
@@ -1518,6 +1609,7 @@ function renderCharts(data){
   dC('ch-bd');var bc={Excellent:0,Good:0,Acceptable:0,Watch:0};data.forEach(function(r){if(bc[r.band]!==undefined)bc[r.band]++;});if(document.getElementById('ch-bd')){CI['ch-bd']=new Chart(document.getElementById('ch-bd'),{type:'pie',data:{labels:Object.keys(bc),datasets:[{data:Object.values(bc),backgroundColor:['#22c55e','#4f8ef7','#f59e0b','#ef4444'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#e8eaf2',padding:11}}}}});}
   dC('ch-cf');var cd=s.filter(function(r){return r.clockifyHrs!=null;});if(document.getElementById('ch-cf')){CI['ch-cf']=new Chart(document.getElementById('ch-cf'),{type:'bar',data:{labels:cd.map(function(r){return r.empName.split(' ')[0];}),datasets:[{label:'System Hrs',data:cd.map(function(r){return r.netHrs?r.netHrs.toFixed(2):0;}),backgroundColor:'#4f8ef7',borderRadius:4},{label:'Clockify Hrs',data:cd.map(function(r){return r.clockifyHrs.toFixed(2);}),backgroundColor:'#ff5722',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e8eaf2'}}},scales:{y:{ticks:{color:'#6b7a99'},grid:{color:'#1f2940'}},x:{ticks:{color:'#6b7a99'},grid:{display:false}}}}});}
   dC('ch-md');if(document.getElementById('ch-md')){CI['ch-md']=new Chart(document.getElementById('ch-md'),{type:'bar',data:{labels:['Remote','Office'],datasets:[{label:'Employees',data:[data.filter(function(r){return r.mode==='Remote';}).length,data.filter(function(r){return r.mode==='Office';}).length],backgroundColor:['#7c3aed','#4f8ef7'],borderRadius:7}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#6b7a99'},grid:{color:'#1f2940'}},y:{ticks:{color:'#6b7a99'},grid:{display:false}}}}});}
+  applyChartPalettes(CI);
 }
 
 // ══════════════════════════════════════════════════
@@ -2030,6 +2122,10 @@ function applyTheme() {
     document.body.classList.add('theme-morning');
   } else {
     document.body.classList.remove('theme-morning');
+  }
+  if(typeof applyChartPalettes==='function'){
+    if(typeof CI!=='undefined') applyChartPalettes(CI);
+    if(typeof ANC!=='undefined') applyChartPalettes(ANC);
   }
 }
 
