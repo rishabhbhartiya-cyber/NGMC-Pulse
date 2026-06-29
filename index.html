@@ -327,7 +327,7 @@ body.is-manager .mgr-only-inline { display:inline-block; }
     <button onclick="closeSuccessModal()" style="background:var(--grn);color:#fff;border:none;border-radius:10px;padding:12px 40px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:opacity .18s;" onmouseover="this.style.opacity='.82'" onmouseout="this.style.opacity='1'">Done ✓</button>
   </div>
 </div>
-<div id="ldr"><div class="spin"></div><div class="lmsg" id="lmsg">Loading TeamPulse...</div></div>
+<div id="ldr"><div class="spin"></div><div class="lmsg" id="lmsg">Loading NGMC-Pulse...</div></div>
 
 <nav>
   <div class="logo">Team<span>Pulse</span></div>
@@ -354,11 +354,11 @@ body.is-manager .mgr-only-inline { display:inline-block; }
 <!-- ════ DB SETUP ═══════════════════════════════════════════ -->
 <div class="view" id="view-setup">
   <h1>⚙️ Google Sheets Setup</h1>
-  <p class="sub">Connect TeamPulse to your Google Sheet — one-time setup, takes 5 minutes.</p>
+  <p class="sub">Connect NGMC-Pulse to your Google Sheet — one-time setup, takes 5 minutes.</p>
   <div class="setup-box">
     <div class="step-row"><div class="snum">1</div><div class="sbody">
       <div class="stitle">Create a Google Sheet</div>
-      <div class="sdesc">Go to <a href="https://sheets.google.com" target="_blank" style="color:var(--acc)">sheets.google.com</a> → New blank sheet → name it <strong>TeamPulse Data</strong>. Copy the Sheet ID from the URL (the long string between <code>/d/</code> and <code>/edit</code>).</div>
+      <div class="sdesc">Go to <a href="https://sheets.google.com" target="_blank" style="color:var(--acc)">sheets.google.com</a> → New blank sheet → name it <strong>NGMC-Pulse Data</strong>. Copy the Sheet ID from the URL (the long string between <code>/d/</code> and <code>/edit</code>).</div>
     </div></div>
     <div class="step-row"><div class="snum">2</div><div class="sbody">
       <div class="stitle">Paste the Apps Script</div>
@@ -1542,7 +1542,7 @@ function cleanupAnalyticsPDF(el,restoreControls,restoreCharts){
 function downloadAnalyticsPDF(){
   renderAnalytics();
   var label=(document.getElementById('an-filter-label').textContent||'analytics').replace(/[^a-z0-9]+/gi,'_').replace(/^_+|_+$/g,'');
-  var file='TeamPulse_Analytics_'+label+'.pdf';
+  var file='NGMC-Pulse_Analytics_'+label+'.pdf';
   if(!window.html2pdf){
     toast('PDF library not loaded. Opening print dialog instead.','i');
     window.print();
@@ -1589,7 +1589,7 @@ function expCSV(type){
   if(type==='eod'){fn='EOD_'+date+'.csv';rows=[['Date','Employee','Team','Mode','Login','Logout','SysHrs','Clockify','Diff','Planned','Done','%','Q','R','O','Score','Band','Blockers','Tomorrow']];rpts.filter(function(r){return !team||r.team===team;}).forEach(function(r){var d=r.clockifyHrs!=null?(r.clockifyHrs-r.netHrs).toFixed(2):'',p=r.tasksPlanned>0?Math.round(r.tasksDone/r.tasksPlanned*100)+'%':'0%';rows.push([r.date,r.empName,r.team,r.mode,r.loginTime,r.logoutTime,r.netHrs?r.netHrs.toFixed(2):'0',r.clockifyHrs!=null?r.clockifyHrs:'',d,r.tasksPlanned,r.tasksDone,p,r.quality,r.responsiveness,r.ownership,r.score,r.band,'"'+(r.blocker||'').replace(/"/g,'""')+'"','"'+(r.tomorrow||'').replace(/"/g,'""')+'"']);});}
   else if(type==='ci'){fn='CheckIns_'+date+'.csv';rows=[['Date','Employee','Team','Mode','Login','OnTime','Tasks','Description']];cis.filter(function(c){return !team||c.team===team;}).forEach(function(c){rows.push([c.date,c.empName,c.team,c.mode,c.loginTime,c.onTime?'Yes':'No',c.tasksPlanned,'"'+(c.taskDesc||'').replace(/"/g,'""')+'"']);});}
   else if(type==='monthly'){fn='Monthly_'+new Date().toISOString().slice(0,7)+'.csv';var byE={};rpts.forEach(function(r){if(!byE[r.empName])byE[r.empName]={name:r.empName,team:r.team,rows:[]};byE[r.empName].rows.push(r);});rows=[['Employee','Team','Days','AvgScore','AvgClockify','TotalPlanned','TotalDone','Completion%','AvgQ','AvgR','AvgO']];Object.values(byE).forEach(function(e){var rs=e.rows,avg=function(k){return rs.reduce(function(s,r){return s+(+r[k]||0);},0)/rs.length;},sum=function(k){return rs.reduce(function(s,r){return s+(+r[k]||0);},0);},p=sum('tasksPlanned')>0?Math.round(sum('tasksDone')/sum('tasksPlanned')*100)+'%':'0%';rows.push([e.name,e.team,rs.length,avg('score').toFixed(1),(sum('clockifyHrs')/rs.length).toFixed(1),sum('tasksPlanned'),sum('tasksDone'),p,avg('quality').toFixed(1),avg('responsiveness').toFixed(1),avg('ownership').toFixed(1)]);});}
-  else{fn='TeamPulse_Full_'+new Date().toISOString().slice(0,10)+'.csv';rows=[['MORNING CHECK-INS']];rows.push(['Date','Employee','Team','Mode','Login','OnTime','Tasks','Description']);cis.forEach(function(c){rows.push([c.date,c.empName,c.team,c.mode,c.loginTime,c.onTime?'Yes':'No',c.tasksPlanned,'"'+(c.taskDesc||'').replace(/"/g,'""')+'"']);});rows.push([]);rows.push(['EOD REPORTS']);rows.push(['Date','Employee','Team','Login','Logout','SysHrs','Clockify','Score','Band','Blocker']);rpts.forEach(function(r){rows.push([r.date,r.empName,r.team,r.loginTime,r.logoutTime,r.netHrs?r.netHrs.toFixed(2):'0',r.clockifyHrs!=null?r.clockifyHrs:'',r.score,r.band,'"'+(r.blocker||'').replace(/"/g,'""')+'"']);});}
+  else{fn='NGMC-Pulse_Full_'+new Date().toISOString().slice(0,10)+'.csv';rows=[['MORNING CHECK-INS']];rows.push(['Date','Employee','Team','Mode','Login','OnTime','Tasks','Description']);cis.forEach(function(c){rows.push([c.date,c.empName,c.team,c.mode,c.loginTime,c.onTime?'Yes':'No',c.tasksPlanned,'"'+(c.taskDesc||'').replace(/"/g,'""')+'"']);});rows.push([]);rows.push(['EOD REPORTS']);rows.push(['Date','Employee','Team','Login','Logout','SysHrs','Clockify','Score','Band','Blocker']);rpts.forEach(function(r){rows.push([r.date,r.empName,r.team,r.loginTime,r.logoutTime,r.netHrs?r.netHrs.toFixed(2):'0',r.clockifyHrs!=null?r.clockifyHrs:'',r.score,r.band,'"'+(r.blocker||'').replace(/"/g,'""')+'"']);});}
   var csv=rows.map(function(r){return r.join(',');}).join('\n'),blob=new Blob([csv],{type:'text/csv'}),a=document.createElement('a');
   a.href=URL.createObjectURL(blob);a.download=fn;a.click();
   toast('⬇ '+fn+' downloaded!','s');
@@ -1644,7 +1644,7 @@ function remE(id){if(!confirm('Remove this employee?'))return;emps=emps.filter(f
 //  DOWNLOAD Code.gs HELPER
 // ══════════════════════════════════════════════════
 function dlGS(){
-  var code = `// TeamPulse Google Apps Script backend
+  var code = `// NGMC-Pulse Google Apps Script backend
 // Paste this full file into Apps Script, run setupSheets once, then deploy as Web App.
 // Deploy settings: Execute as Me | Who has access: Anyone (not "Anyone with Google account")
 
@@ -2143,14 +2143,14 @@ var MORNING_QUOTES = [
   { text: "The way to get started is to quit talking and begin doing.", author: "Walt Disney" },
 ];
 var EVENING_QUOTES = [
-  { text: "You are stronger than you think. Rest well — tomorrow is a new canvas.", author: "TeamPulse" },
-  { text: "Every day you show up is a win. Be proud of what you accomplished today.", author: "TeamPulse" },
+  { text: "You are stronger than you think. Rest well — tomorrow is a new canvas.", author: "NGMC-Pulse" },
+  { text: "Every day you show up is a win. Be proud of what you accomplished today.", author: "NGMC-Pulse" },
   { text: "Hard work beats talent when talent doesn't work hard.", author: "Tim Notke" },
-  { text: "The harder you work for something, the greater you'll feel when you achieve it.", author: "TeamPulse" },
+  { text: "The harder you work for something, the greater you'll feel when you achieve it.", author: "NGMC-Pulse" },
   { text: "Don't count the days, make the days count.", author: "Muhammad Ali" },
   { text: "Success isn't always about greatness. It's about consistency.", author: "Dwayne Johnson" },
-  { text: "You've done more today than you realize. Log off with pride.", author: "TeamPulse" },
-  { text: "Each evening brings an end. Each morning brings new hope.", author: "TeamPulse" },
+  { text: "You've done more today than you realize. Log off with pride.", author: "NGMC-Pulse" },
+  { text: "Each evening brings an end. Each morning brings new hope.", author: "NGMC-Pulse" },
 ];
 
 function showQuote() {
